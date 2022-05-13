@@ -139,6 +139,10 @@ def scikit_learn_perceptron(data):
 
 # 感知机--原始算法
 class PerceptronOrigin:
+    """
+    感知机原始算法
+    """
+
     # 构造时值初始化 w = (0, 0) b = 0
     def __init__(self, data):
         # 初始化参数 w , b,和学习率
@@ -212,6 +216,9 @@ class PerceptronOrigin:
 
 # 感知机-对偶算法
 class PerceptronDual:
+    """
+    感知机-对偶算法
+    """
     # 构造时值初始化 w = (0, 0) b = 0
     def __init__(self):
         # 初始化参数 alpha[i] = n[i] * l_rate
@@ -278,6 +285,7 @@ def score(test_x, test_y, weights, b_0):
         if y_i * ((weights @ x_i) + b_0) >= 0:
             correct_count += 1
     return correct_count / len(test_x)
+
 
 if __name__ == '__main__':
     # 加载数据
