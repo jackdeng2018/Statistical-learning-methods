@@ -9,12 +9,12 @@
 '''
 
 import math
-from itertools import combinations
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 
 from collections import Counter
 
@@ -91,11 +91,90 @@ class KNN:
             dist = np.linalg.norm(x_point - self.x_train[i], ord=self.p_train)
             knn_list.append((dist, self.y_train[i]))
 
+        # 找出最近的n个点
         for i in range(self.neighbors, len(self.x_train)):
+            # 找出n个最近邻中最远的点
             max_index = knn_list.index(max(knn_list, key=lambda x: x[0]))
             dist = np.linalg.norm(x_point - self.x_train[i], ord=self.p_train)
             if knn_list[max_index][0] > dist:
                 knn_list[max_index] = (dist, self.y_train[i])
+
+        # 统计来给出预测结果
+        knn = [k[-1] for k in knn_list]
+        count_pairs = Counter(knn)
+        max_count = sorted(count_pairs, key=lambda x: x)[-1]
+        return max_count
+
+    def score(self, x_test, y_test):
+        """
+        测试集上得分
+
+        Args:
+            x_test ():
+            y_test ():
+
+        Returns:
+
+        """
+        right_count = 0
+        for x_point, y_point in zip(x_test, y_test):
+            label = self.predict(x_point)
+            if label == y_point:
+                right_count += 1
+        return right_count / len(x_test)
+
+
+def knn(x_train, y_train, x_test, y_test):
+    """
+    knn
+
+    Args:
+        x_train ():
+        y_train ():
+        x_test ():
+        y_test ():
+
+    Returns:
+
+    """
+    # 训练模型
+    clf = KNN(x_train, y_train, 3)
+    score = clf.score(x_test, y_test)
+    print(str(score))
+
+    # 测试一点
+    test_point = [6.0, 3.0]
+    print('Test Point: {}'.format(clf.predict(test_point)))
+
+    # 可视化
+    plt.scatter(data_frame[:50]['sepal length'], data_frame[:50]['sepal width'], label='0')
+    plt.scatter(data_frame[50:100]['sepal length'], data_frame[50:100]['sepal width'], label='1')
+    plt.plot(test_point[0], test_point[1], 'bo', label='test_point')
+    plt.xlabel('sepal length')
+    plt.ylabel('sepal width')
+    plt.legend()
+    plt.show()
+
+
+def knn_sk(x_train, y_train, x_test, y_test):
+    """
+    knn-scikit
+
+    Args:
+        x_train ():
+        y_train ():
+        x_test ():
+        y_test ():
+
+    Returns:
+
+    """
+    clf_sk = KNeighborsClassifier
+    clf_sk.fit(x_train, y_train)
+    score = clf_sk.score(x_test, y_test)
+    print(str(score))
+
+
 
 
 if __name__ == '__main__':
@@ -114,4 +193,9 @@ if __name__ == '__main__':
     data = np.array(data_frame.iloc[:100, [0, 1, -1]])
     x_data, y_data = data[:, :-1], data[:, -1]
     # 没用交叉验证集 只用了测试集
-    x_tr, x_test, y_tr, y_test = train_test_split(x_data, y_data, test_size=0.2)
+    x_tra, x_tes, y_tra, y_tes = train_test_split(x_data, y_data, test_size=0.2)
+
+    # 手写knn
+    knn(x_tra, y_tra, x_tes, y_tes)
+    # scikit0knn
+    knn_sk(x_tra, y_tra, x_tes, y_tes)
